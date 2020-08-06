@@ -7,7 +7,7 @@ author: 'dashjay'
 
 创建于 2020-07-31，最终修订于 2020-08-06
 
-在之前的[介绍课程(二)](https://github.com/dashjay/http_demo/tree/2-http-request-response)中我们讲了有关 HTTP 头部，请求体和返回结构在 cpp中的定义，今天我们来说一些很不相关，但是也很重要的内容：
+在之前的[课程(二)](https://github.com/dashjay/http_demo/tree/2-http-request-response)中我们讲了有关 HTTP 头部，请求体和返回结构在 cpp中的定义，今天我们来说一些很不相关，但是也很重要的内容：
 
 今天的任务是 "[易]引入cpptoml从文件读取配置，引入spdlog尝试打log，帮助调试"。
 

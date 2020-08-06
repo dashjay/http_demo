@@ -6,11 +6,11 @@ author: 'dashjay'
 ---
 
 
-在之前的[介绍课程(三)](https://github.com/dashjay/http_demo/tree/3-cpptoml-spdlog)中我们讲了一些和配置加载与log程序的工作。
+在之前的[课程(三)](https://github.com/dashjay/http_demo/tree/master/3-cpptoml-spdlog)中我们讲了一些和配置加载与log程序的工作。
 
 今天的任务是 "[难]定义一个bufReader类，并且使用该bufReader从TCP流中解析HTTP请求和返回体"，这是唯一一个被我标识为难的东西，其实也不难，只是相对繁琐。
 
-所有的代码都在 <https://github.com/dashjay/http_demo/tree/4-bufreader> 中
+所有的代码都在 <https://github.com/dashjay/http_demo/tree/master/4-bufreader> 中
 
 本节课的代码，全部在上一节课的基础上
 
@@ -18,7 +18,7 @@ Let's do it
 
 ## 0x1 TCP基于流传输
 
-TCP传输从不以包为单位，也就是说，一个 GET 请求或一个 POST 请求并不是一个包。也不是你所想象的（我们之前描述的那个样子）。
+TCP传输从不以包为单位，也就是说，一个 GET 请求或一个 POST 请求并不是一个包。也不是你所想象的（我们之前描述的样子）,我们想象总是很美好，以为它是这个样子的，读起来很轻松。
 
 ```cpp
 GET / HTTP/1.1
@@ -27,13 +27,13 @@ Key: Value
 body
 ```
 
-把他画成这样只是为了方便理解，其实他是这样的：`GET / HTTP/1.1\r\nKey: Value\r\n\r\nbody`。而且，请求和请求之间没有什么界限。因此他们会是这样的：`GET / HTTP/1.1\r\nKey: Value\r\n\r\nbodyGET /...`，你在读取的过程中可能会遇得到很多奇怪的事情：
+把他画成上面这样只是为了方便理解，其实他是这样的：`GET / HTTP/1.1\r\nKey: Value\r\n\r\nbody`。而且，请求和请求之间没有什么界限。因此他们会是这样的：`GET / HTTP/1.1\r\nKey: Value\r\n\r\nbodyGET /...`，你在读取的过程中可能会遇得到很多奇怪的事情：
 
-- 请求长度比你想象的长
-- 请求长度比你想象的短一些
+- 请求长度比你想象的长一点
+- 请求长度比你想象的短一点
 - ....
 
-在读取过程中总会遇到各种不同的问题，读起来会很痛苦，如果不写一个reader帮助我们实现一些类似 `readline()` 或 `read_n()`的函数，这样我们起码能在读取的过程中，节省一些精力。
+在读取过程中总会遇到各种不同的问题，读起来会很痛苦，如果写一个reader帮助我们实现一些类似 `readline()` 或 `read_n()`的函数，这样我们起码能在读取的过程中，节省一些精力。
 
 我们倒过来思考吧，如果我现在有了一行数据，我应该怎么提取出数据呢？
 
@@ -96,6 +96,8 @@ private:
     sockpp::tcp_socket *m_sock;
     char *m_r;
     char *m_w;
+    // 有时候遇到错误不会立刻返回，而是把错误储存起来，在必要时候检测是否有错误。
+    // 因为不管有没有错误，buffer里面已经有的东西是存在的
     int error_num;
     char m_buf[siz];
 
@@ -128,7 +130,7 @@ template<size_t siz>
             int dist{static_cast<int>(m_w - m_r)};
             // 如果有数据...
             if (dist > 0) {
-                // ... 将他们在 buf 中顶格存放
+                // ... 将他们在 buf 中对齐数组buf存放
                 std::memcpy(m_buf, m_r, dist);
                 m_w -= dist;
                 m_r = m_buf;
@@ -138,7 +140,8 @@ template<size_t siz>
             }
         }
         errors::Error err("BufReader", "fill", ErrFillFullBuffer);
-            // 如果 buf 已经满了，还在读就会返回（这里未来应该抛出异常）
+
+        // 如果 buf 已经满了，还在读就会返回（这里未来应该抛出异常）
         if (static_cast<size_t>(m_w - m_buf) >= siz) {
             throw std::move(err);
         }
@@ -199,7 +202,7 @@ template<size_t siz>
 
 我们在HTTP的操作中比较常见的是希望能读到 `\r\n` 或 `\n` 为结束。因此希望能定义一个叫做 read_until 函数，能够在某个字符出现之前，一直读取。
 
-这个函数你可以先尝试自己写，我会为你提供头部定义
+这个函数你可以先尝试自己写，我会为你提供头部定义，返回前别忘了，移动你的 m_r 和 m_w 指针
 
 ```cpp
 template<size_t siz>
