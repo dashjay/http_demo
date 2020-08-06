@@ -29,8 +29,9 @@ std::string Request::to_string() {
     for (auto &kv:this->headers.hdr()) {
         out << kv.first << ": " << kv.second << "\r\n";
     }
+    out << "\r\n";
     if (!this->body.empty()) {
-        out << "\n" << this->body;
+        out << this->body;
     }
     return out.str();
 }
@@ -41,8 +42,9 @@ std::string Response::to_string() {
     for (auto &kv:this->headers.hdr()) {
         out << kv.first << ": " << kv.second << "\r\n";
     }
+    out << "\r\n";
     if (!this->body.empty()) {
-        out << "\n" << this->body;
+        out << this->body;
     }
     return out.str();
 }
