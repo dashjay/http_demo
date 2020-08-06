@@ -5,13 +5,13 @@ description: ''
 author: 'dashjay'
 ---
 
+创建于 2020-07-31，最终修订于 2020-08-06
 
-
-在之前的[介绍课程(一)](https://github.com/dashjay/http_demo/tree/1-cmake-socket-echo)中我们说有关Cmake和知识，并且选用了一个Socket库
+在之前的[介绍课程(一)](https://github.com/dashjay/http_demo/tree/master/1-cmake-socket-echo)中我们说有关Cmake和知识，并且选用了一个Socket库
 
 今天的任务是 "[易]定义HTTP请求和返回体的结构，构建并输出HTTP请求和返回体到标准输出。"。
 
-所有的代码都在 <https://github.com/dashjay/http_demo/tree/2-http-request-response> 中
+所有的代码都在 <https://github.com/dashjay/http_demo/tree/master/2-http-request-response> 中
 
 Let's do it
 
@@ -185,7 +185,7 @@ void set_header(const char *key, const std::string &val);
 ```
 
 - 当我们直接手写字符串的时候传入的是 `const char *key`，例如 `headers.add_header("Content-Length","0")`
-- `const std::string val`，如果我们想直接添加，就必须这样写`headers.add_header(val.c_str(),"0")`，重载帮助我们直传 `std::string`
+- 如果我们想直接添加一个 `std::string val`，就必须这样写`headers.add_header(val.c_str(),"0")`，提供一个重载帮助我们直传 `std::string`
 
 具体的实现，无非就是使用了以下几个方法，你可以自己实现试试，在文末的附录中，我会把代码一一列出
 
