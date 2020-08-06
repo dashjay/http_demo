@@ -16,9 +16,14 @@ Repo我开在这里，欢迎大家点个Star或者Fork操作。<https://github.c
 1. [易]简单的Cmake的教程，选用一个Socket库[^2]并实现一个echo[^3]。[link](https://github.com/dashjay/http_demo/tree/master/1-cmake-socket-echo)
 2. [易]定义HTTP请求和返回体的结构，构建并输出HTTP请求和返回体到标准输出。[link](https://github.com/dashjay/http_demo/tree/master/2-http-request-response)
 3. [易]引入cpptoml从文件读取配置，引入spdlog尝试打log，帮助调试。[link](https://github.com/dashjay/http_demo/tree/master/3-cpptoml-spdlog)
-4. [难]定义一个bufReader类，并且使用该bufReader从TCP流中解析HTTP请求和返回体。[link](https://github.com/dashjay/http_demo/tree/4-bufreader)
+4. [难]定义一个bufReader类，并且使用该bufReader从TCP流中解析HTTP请求和返回体。[link](https://github.com/dashjay/http_demo/tree/master/4-bufreader)
 5. [易]实现主程序逻辑，监听端口，接收请求。
 6. [选]实现其他HTTP附加功能。
+
+## 更新日志
+
+- 2020-08-06：维护 4 个分支太麻烦了，所有教程全部放到 master 分支的不同文件夹下
+- 2020-08-05：更新教程 4-bufreader
 
 我们要准备的东西(推荐）
 
