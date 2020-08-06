@@ -5,11 +5,13 @@ description: ''
 author: 'dashjay'
 ---
 
-在之前的[介绍课程(零)](/post/2020/07/30/手动用cpp实现http零/)中我们说了要用六节课来实现一个HTTP，
+创建于 2020-07-31，最终修订于 2020-08-06
+
+在之前的[介绍课程(零)](https://github.com/dashjay/http_demo)中我们说了要用六节课来实现一个HTTP，
 
 今天的任务是 "[易]简单的Cmake的教程，选用一个Socket库并实现一个echo"。
 
-所有的代码都在 <https://github.com/dashjay/http_demo/tree/1-cmake-socket-echo> 中
+所有的代码都在 <https://github.com/dashjay/http_demo/tree/master/1-cmake-socket-echo> 中
 
 Let's do it
 
@@ -32,7 +34,7 @@ Hello World!
 
 ```
 
-但是我们要尝试使用一次Cmake[^1]
+但是我们要尝试使用一次Cmake[1]
 
 ``` cmake
 # 指定cmake的版本，随意了，我们不会用太高级的功能
@@ -70,11 +72,13 @@ build目录下会产生很多文件，通常我们不用理会他们，只需要
 
 ### 为什么弄这么麻烦的东西
 
+[make新手教程](https://cmake.org/cmake/help/v3.16/guide/tutorial/index.html)
+
 当项目复杂到一定程度时，有大量自动化的操作可以节省我们的时间，例如我们可以针对Hello World输出生成一个测试，每次编写完程序，我们只需要make一下（如果cmake文件没有变化的话），然后运行make test来进行自动化测试（测试样例需要我们自己编写）。当然这个Cmake在本次项目中的作用也不是很能体现出优势，但是笔者认为仍然有必要学习这种自动化工具。
 
 ## 0x2 选用一个cpp的socket库
 
-经过一些挑选，选中了一个叫[Sockpp](https://github.com/fpagliughi/sockpp)的库。这个库用法很“现代”CPP，看起来一点都不古老，十分舒适。
+经过一些挑选，选中了一个叫[Sockpp](https://github.com/fpagliughi/sockpp)的库。这个库用法很“现代”CPP，十分舒适，有很多上古socket库，用法或者代码比较古老了，我就只推荐这个了。
 
 安装也很简单
 
@@ -84,7 +88,7 @@ cd sockpp; mkdir build; cd build
 cmake .. && make && sudo make install
 ```
 
-这样，sockpp就安装到你系统中了，确切的说是分别安装了头文件和依赖库到你系统的include和lib中。
+这样，sockpp就安装到你系统中了，确切的说是分别安装了头文件和依赖库到你系统的 include 和 lib 中。
 
 ### 1. 了解sockpp的使用
 
@@ -107,7 +111,7 @@ sockpp::tcp_socket sock = acc.accept();
 
 ### 2. 写一个Echo
 
-不多废话，直接看代码（省略了一个函数的实现）
+不多废话，直接看代码
 
 ``` cpp
 #include "sockpp/tcp_acceptor.h"
@@ -303,5 +307,7 @@ add_executable(server server.cpp)
 - 用CPP写了一个Hello World
 - 学习使用Cmake运行普通的程序，添加链接库等
 - 简单的Sockpp的使用
+
+还有什么问题可以直接到ISSUE中提问，我或者社区里的其他小伙伴会帮你解答的。
 
 [1] Cmake可以帮助跨平台软件的安装和编译，可以通过命令生成一系列Makefile，然后进一步执行编译，测试等指令（对我们来说就这个作用，实际上功能比这个要强大的多。）
