@@ -11,9 +11,9 @@ author: 'dashjay'
 
 Repo我开在这里，欢迎大家点个Star或者Fork操作。<https://github.com/dashjay/http_demo.git>
 
-本教程[^1]，使用6节课程/文章，尝试使用最简单的CPP知识实现一个高性能，简单的的HTTP Server。
+本教程[1]，使用6节课程/文章，尝试使用最简单的CPP知识实现一个高性能，简单的的HTTP Server。
 
-1. [易]简单的Cmake的教程，选用一个Socket库[^2]并实现一个echo[^3]。[link](https://github.com/dashjay/http_demo/tree/master/1-cmake-socket-echo)
+1. [易]简单的Cmake的教程，选用一个Socket库[2]并实现一个echo[3]。[link](https://github.com/dashjay/http_demo/tree/master/1-cmake-socket-echo)
 2. [易]定义HTTP请求和返回体的结构，构建并输出HTTP请求和返回体到标准输出。[link](https://github.com/dashjay/http_demo/tree/master/2-http-request-response)
 3. [易]引入cpptoml从文件读取配置，引入spdlog尝试打log，帮助调试。[link](https://github.com/dashjay/http_demo/tree/master/3-cpptoml-spdlog)
 4. [难]定义一个bufReader类，并且使用该bufReader从TCP流中解析HTTP请求和返回体。[link](https://github.com/dashjay/http_demo/tree/master/4-bufreader)
@@ -25,12 +25,14 @@ Repo我开在这里，欢迎大家点个Star或者Fork操作。<https://github.c
 - 2020-08-06：维护 4 个分支太麻烦了，所有教程全部放到 master 分支的不同文件夹下
 - 2020-08-05：更新教程 4-bufreader
 
-我们要准备的东西(推荐）
+## 我们要准备的东西(推荐）
 
 - 一个顺手的IDE，推荐CLion，VScode，也可以用VIM，Emacs或你顺手的。
 - 建议使用在Linux或MacOS下进行，因为我本地没Windows，没法为大家验证过程可行性。
 - 你的耐心
 
-- [1] 算不上什么教程，顺便测试一下脚注。
-- [2] HTTP/GRPC 等等这样的协议通常底层采用TCP来实现，也就是学校里学到的那种面向流的服务，cpp中的系统调用实现的socker接口用起来有些不顺手。因此我找到了一个现代的Socket库<https://github.com/fpagliughi/sockpp>来帮助我们在这节课中完成HTTP服务器。
-- [3] 你发给它什么，他就回复什么，常见的网络库都会用这个代替HELLOWORLD
+解释
+
+1. 算不上什么教程，顺便测试一下脚注。
+2. HTTP/GRPC 等等这样的协议通常底层采用TCP来实现，也就是学校里学到的那种面向流的服务，cpp中的系统调用实现的socker接口用起来有些不顺手。因此我找到了一个现代的Socket库<https://github.com/fpagliughi/sockpp>来帮助我们在这节课中完成HTTP服务器。
+3. 你发给它什么，他就回复什么，常见的网络库都会用这个代替HELLOWORLD

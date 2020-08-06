@@ -6,7 +6,6 @@ author: 'dashjay'
 ---
 
 
-
 在之前的[介绍课程(三)](https://github.com/dashjay/http_demo/tree/3-cpptoml-spdlog)中我们讲了一些和配置加载与log程序的工作。
 
 今天的任务是 "[难]定义一个bufReader类，并且使用该bufReader从TCP流中解析HTTP请求和返回体"，这是唯一一个被我标识为难的东西，其实也不难，只是相对繁琐。
@@ -1112,4 +1111,6 @@ server: http-demo-1
 
 1. 读取返回包的方式除了根据 `Content-Length` 读取之外，还有 `Transfer-Encoding: chunked` 的模式，你可以尝试查询资料并实现。
 
-1. 
+2. 程序中并未引入线程概念，因此程序在同一时刻只能接收一份http服务，这明显不符合逻辑，下节课我将于此点展开，在此之前，你可以先驱去了解一下 thread 头文件中包含的内容。
+
+谢谢你的阅读，这点东西，一不小心就写了将近6个小时。
