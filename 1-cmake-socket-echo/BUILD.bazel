@@ -1,0 +1,11 @@
+cc_binary(
+    name = "hello-world",
+    srcs = ["main.cpp"]
+)
+
+cc_binary(
+    name = "server",
+    srcs = ["server.cpp"],
+    deps = ["@libsockpp//:sockpp"],
+    copts = ["-std=c++17"],
+)
