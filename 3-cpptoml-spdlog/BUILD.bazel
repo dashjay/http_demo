@@ -1,0 +1,24 @@
+filegroup(
+    name = "all",
+    srcs = glob(["*.cpp", "*.h"])
+)
+
+cc_library(
+    name = "spdlog",
+    srcs = ["@spdlog//:include"],
+    linkstatic=1
+)
+
+cc_library(
+    name = "cpptoml",
+    srcs = ["@cpptoml//:include"],
+    linkstatic=1
+)
+
+cc_binary(
+    name = "main",
+    srcs = [":all"],
+    deps = [":spdlog", ":cpptoml"],
+    includes = ["../external/spdlog/include", "../external/cpptoml/include"],
+    copts = ["-std=c++17"],
+)

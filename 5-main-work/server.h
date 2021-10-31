@@ -2,7 +2,7 @@
 #include "sockpp/tcp_connector.h"
 #include "sockpp/tcp_acceptor.h"
 #include "spdlog/spdlog.h"
-#include "bufio.cpp"
+#include "bufio.hpp"
 #include "cxxhttp.h"
 #include <cpptoml.h>
 #include <functional>

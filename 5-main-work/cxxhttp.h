@@ -2,7 +2,7 @@
 #define HTTP_TEST_CXXHTTP_H
 
 #include "headers.h"
-#include "bufio.cpp"
+#include "bufio.hpp"
 
 class Response;
 

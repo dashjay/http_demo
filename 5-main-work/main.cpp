@@ -1,5 +1,5 @@
 #include "spdlog/spdlog.h"
-#include "server.cpp"
+#include "server.h"
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
         std::string body = "Hello Server";
         req.resp->body = body;
         req.resp->headers.set_header("Content-Length", std::to_string(body.length()));
-        return false;
+        return true;
     });
 
     if (!core.Listen()) {

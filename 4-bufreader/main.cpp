@@ -2,7 +2,6 @@
 #include "sockpp/tcp_acceptor.h"
 #include "sockpp/tcp_connector.h"
 #include "bufio.hpp"
-#include "spdlog/spdlog.h"
 
 #define listen_port 8081
 #define target_port 8080
@@ -28,7 +27,7 @@ int main() {
             spdlog::info("read request error");
             continue;
         }
-        spdlog::info("read request success {}", req.to_string());
+        spdlog::info("read request success \n{}", req.to_string());
 
         sockpp::tcp_connector conn;
         if (!conn.connect(sockpp::inet_address("0.0.0.0", target_port))) {

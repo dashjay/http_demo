@@ -1,4 +1,3 @@
-
 #include "cxxhttp.h"
 
 #include <sstream>

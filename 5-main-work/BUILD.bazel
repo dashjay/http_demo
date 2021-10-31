@@ -1,0 +1,48 @@
+cc_binary(
+    name = "lambda_test",
+    srcs = ["lambda.cpp", "headers.cpp", "headers.h"],
+    copts = ["-std=c++17"],
+)
+
+cc_library(
+    name = "spdlog",
+    srcs = ["@spdlog//:include"],
+    linkstatic=1
+)
+
+cc_library(
+    name = "cpptoml",
+    srcs = ["@cpptoml//:include"],
+    linkstatic=1
+)
+
+filegroup(
+    name = "main_src",
+    srcs = glob([
+        "main.cpp", 
+        "*.h",
+    ])
+)
+
+cc_library(
+    name = "http_lib",
+    srcs = [
+        "server.cpp", 
+        "server.h", 
+        "bufio.hpp", 
+        "headers.cpp", 
+        "cxxhttp.cpp", 
+        "cxxhttp.h", 
+        "headers.h",],
+    deps = [":spdlog", ":cpptoml", "@libsockpp//:sockpp"],
+    includes = ["../external/spdlog/include", "../external/cpptoml/include"],
+    copts = ["-std=c++17"],
+)
+
+cc_binary(
+    name = "main",
+    srcs = ["main.cpp"],
+    deps = [":spdlog", ":http_lib", ":cpptoml", "@libsockpp//:sockpp"],
+    includes = ["../external/spdlog/include", "../external/cpptoml/include"],
+    copts = ["-std=c++17"],
+)

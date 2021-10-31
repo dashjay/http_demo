@@ -1,7 +1,7 @@
 #include "string"
 #include "sockpp/tcp_connector.h"
 #include "spdlog/spdlog.h"
-#include "bufio.cpp"
+#include "bufio.hpp"
 #include "cxxhttp.h"
 #include "server.h"
 #include <cpptoml.h>
@@ -21,7 +21,6 @@ ServerCfg new_config_from_file(const std::string &filename) {
 }
 
 void handle_conn(sockpp::tcp_socket &&sock, Core *c) {
-
     try {
         bufio::BufReader<MaxBufSize> Cr(&sock);
         for (;;) {
@@ -47,6 +46,10 @@ void handle_conn(sockpp::tcp_socket &&sock, Core *c) {
             Cr.write(req.resp->to_string());
         }
     } catch (errors::Error &error) {
+        if (error.detail == ErrNegativeRead){
+            spdlog::info("handle_conn over, tcp conn closed");
+            return;
+        }
         spdlog::error("handle_conn error, detail: {}", error.to_string());
     }
 }

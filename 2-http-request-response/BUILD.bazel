@@ -1,0 +1,10 @@
+filegroup(
+    name = "all",
+    srcs = glob(["*.cpp", "*.h"])
+)
+
+cc_binary(
+    name = "rr",
+    srcs = [":all"],
+    copts = ["-std=c++17"],
+)
