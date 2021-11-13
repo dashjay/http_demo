@@ -7,7 +7,7 @@ author: 'dashjay'
 
 创建于 2020-07-31，最终修订于 2020-08-06
 
-在之前的[课程(一)](https://github.com/dashjay/http_demo/tree/master/1-cmake-socket-echo)中我们说有关Cmake和知识，并且选用了一个Socket库
+在之前的[课程(一)](https://github.com/dashjay/http_demo/tree/master/1-bazel-socket-echo)中我们说有关 Bazel 和知识，并且选用了一个Socket库
 
 今天的任务是 "[易]定义HTTP请求和返回体的结构，构建并输出HTTP请求和返回体到标准输出。"。
 
@@ -177,7 +177,9 @@ public:
 #endif //HTTP_TEST_HEADERS_H
 ```
 
-为什么重载两份：
+为什么重载两份：[Learn CPP 8.10 — Function overload differentiation](https://www.learncpp.com/cpp-tutorial/function-overload-differentiation/)
+
+有关函数重载的讲解可以在上方链接看到，这里有我翻译的[中文版本](https://learncppcn.github.io/)，还没完成翻译。
 
 ```cpp
 void set_header(const char *key, const char *val);
@@ -324,7 +326,7 @@ body
 
 除此之外，你还可以做一些适当 **延伸** ，这里可以给你一个简单的方向。
 
-1. multimap的模板构造器可以传入第三个参数，作为一个比较器，用来对 key value 进行排序，你可以探究一下第三个参数，提示：`std::lexicographical_compare`
+1. multimap 的模板构造器可以传入第三个参数，作为一个比较器，用来对 key value 进行排序，你可以探究一下第三个参数，提示：`std::lexicographical_compare`
 
 2. Cookies 的头部构造和其他的 Headers 稍许不同，因为 Cookies 可以为不止 1 对键值对，但是必须存储在一个 Header Value 中: 可以实现一个 Cookies 类或结构，并在 Request 中提供添加，删除的方法，并且在最后 `to_string` 时追加到header中
 
@@ -452,6 +454,8 @@ std::string Response::to_string() {
 ### 代码片段2解释
 
 构造函数中，使用了这样的构造函数，其中的 `&&` 表示传入的是 **右值(r-value)**，会触发 **移动语义(move semantics)**
+
+[Learn CPP rvalue-references](https://www.learncpp.com/cpp-tutorial/rvalue-references/)
 
 ```cpp
 Request::Request(
