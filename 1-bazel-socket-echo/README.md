@@ -9,13 +9,13 @@ author: 'dashjay'
 
 在之前的[介绍课程(零)](https://github.com/dashjay/http_demo)中我们说了要用六节课来实现一个HTTP，
 
-今天的任务是 "[易]简单的Cmake的教程，选用一个Socket库并实现一个echo"。
+今天的任务是 "[易]简单的 Bazel 的教程，选用一个Socket库并实现一个 echo"。
 
 所有的代码都在 <https://github.com/dashjay/http_demo/tree/master/1-cmake-socket-echo> 中
 
 Let's do it
 
-## 0x1 编写一个HelloWorld并尝试使用Cmake编译它
+## 0x1 编写一个HelloWorld并尝试使用 Bazel 编译它
 
 ``` cpp
 #include<iostream>
@@ -34,61 +34,69 @@ Hello World!
 
 ```
 
-但是我们要尝试使用一次Cmake[1]
+但是我们要尝试使用一次 Bazel[1]
 
-``` cmake
-# 指定cmake的版本，随意了，我们不会用太高级的功能
-cmake_minimum_required(VERSION 3.16)
-
-# set可以设定一个变量
-set(project_name http_demo)
-
-# 项目名称 ${xxxx} 可以导入之前的变量
-project(${project_name})
-
-set(CMAKE_CXX_COMPILER "c++") # 编译器
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_STANDARD 17) # cpp指定标准
-
-# 设定编译的FLAGS
-set(CMAKE_CXX_FLAGS -g -W)
-string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-message(STATUS "CMAKE_CXX_FLAGS: " "${CMAKE_CXX_FLAGS}")
-
-# 添加一个可执行文件
-add_executable(main main.cpp)
+``` python
+cc_binary(
+    name = "hello-world",
+    srcs = ["main.cpp"]
+)
 ```
 
-通常情况下我们不会再项目目录里执行 `cmake .` ，这会导致很多混乱的问题，我们通常创建一个build文件夹做这个操作
-
 ``` bash
-mkdir build; cd build
-cmake .. && make
-./main
+# 执行 bazel 的根目录，需要创建一个空文件叫做 WORKSPACE
+$ bazel run //1-cmake-socket-echo:hello-world
+INFO: Invocation ID: e86403fc-209c-4115-9d28-333fb8abfa22
+INFO: Analyzed target //1-cmake-socket-echo:hello-world (14 packages loaded, 61 targets configured).
+INFO: Found 1 target...
+Target //1-cmake-socket-echo:hello-world up-to-date:
+  bazel-bin/1-cmake-socket-echo/hello-world
+INFO: Elapsed time: 19.948s, Critical Path: 2.25s
+INFO: 8 processes: 6 internal, 2 darwin-sandbox.
+INFO: Build completed successfully, 8 total actions
+INFO: Build completed successfully, 8 total actions
 Hello World!
 ```
 
-build目录下会产生很多文件，通常我们不用理会他们，只需要管我们的输出文件即可。
-
 ### 为什么弄这么麻烦的东西
 
-[make新手教程](https://cmake.org/cmake/help/v3.16/guide/tutorial/index.html)
+[bazel C++ 新手教程](https://docs.bazel.build/versions/4.2.1/tutorial/cpp.html)
 
-当项目复杂到一定程度时，有大量自动化的操作可以节省我们的时间，例如我们可以针对Hello World输出生成一个测试，每次编写完程序，我们只需要make一下（如果cmake文件没有变化的话），然后运行make test来进行自动化测试（测试样例需要我们自己编写）。当然这个Cmake在本次项目中的作用也不是很能体现出优势，但是笔者认为仍然有必要学习这种自动化工具。
+当项目复杂到一定程度时，bazel 可以帮助我们实现自动化，减小后期维护过程中修改构建脚本的成本。
 
-## 0x2 选用一个cpp的socket库
+## 0x2 选用一个 cpp 的 socket 库
 
-经过一些挑选，选中了一个叫[Sockpp](https://github.com/fpagliughi/sockpp)的库。这个库用法很“现代”CPP，十分舒适，有很多上古socket库，用法或者代码比较古老了，我就只推荐这个了。
+经过一些挑选，选中了一个叫 [Sockpp](https://github.com/fpagliughi/sockpp)的库。这个库用法很“现代”CPP，十分舒适，有很多上古socket库，用法或者代码比较古老了，我就只推荐这个了。
 
 安装也很简单
 
 ``` bash
-git clone https://github.com/fpagliughi/sockpp
-cd sockpp; mkdir build; cd build
-cmake .. && make && sudo make install
+# git clone https://github.com/fpagliughi/sockpp
+# cd sockpp; mkdir build; cd build
+# cmake .. && make && sudo make install
+
+# 但是因为我们在 bazel 中，于是不再这么安装了
+# 我们在 WORKSPACE 文件中编写一些 starlack 就可以集成。
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+http_archive(
+    name = "libsockpp",
+    urls = ["https://github.com/fpagliughi/sockpp/archive/refs/tags/v0.7.tar.gz"],
+    sha256 = "5cbf593f534fef5e12a4aff97498f0917bbfcd67d71c7b376a50c92b9478a86b",
+    strip_prefix = "sockpp-0.7",
+    build_file_content = """
+cc_library(
+    name = "sockpp", 
+    srcs = glob(["src/*.cpp"]), 
+    hdrs = glob(["include/sockpp/*.h"]),
+    includes = ["include"],
+    visibility = ["//visibility:public"], 
+)
+"""
+)
+
 ```
 
-这样，sockpp就安装到你系统中了，确切的说是分别安装了头文件和依赖库到你系统的 include 和 lib 中。
+这样，sockpp 就能再构建的过程中直接引用了。
 
 ### 1. 了解sockpp的使用
 
@@ -231,7 +239,7 @@ CRLF其实是两个字符，回车换行的意思，他们分别是
 
 全称是 Carriage-Return Line-Feed ，可以代表回车的东西，[这里有一个Stack Overflow的提问](https://stackoverflow.com/questions/1552749/difference-between-cr-lf-lf-and-cr-line-break-types)可以帮助你思考这个东西。
 
-> 如果到这里你不知道ptr是个指针，*ptr会取指针的值，那么你应该先去了解一下有关指针的内容。（占位符，我之后会自己写一篇）。
+> 如果到这里你不知道ptr是个指针，*ptr 会取指针的值，那么你应该先去了解一下有关指针的内容。（占位符，我之后会自己写一篇）。
 
 - (4) 运行结果
 
@@ -246,68 +254,44 @@ hello world # <- 发出去的数据
 hello world # <- 收到的数据
 ```
 
-## 0x3 使用Cmake进行自动编译Server
+## 0x3 使用 Bazel 进行自动编译Server
 
-我们在Cmake中添加一个可执行文件，向之前的FLAG添加一个`-lsockpp`
+我们在 Bazel 中添加一个可执行文件，并且添加依赖 `"@libsockpp//:sockpp"`
 
-```cmake
-set(CMAKE_CXX_FLAGS -g -W -lsockpp)
-...
-add_executable(server server.cpp)
+```python
+cc_binary(
+    name = "server",
+    srcs = ["server.cpp"],
+    deps = ["@libsockpp//:sockpp"],
+    copts = ["-std=c++17"],
+)
 ```
 
 然后我们立刻执行
 
-```cmake
-cd build
-cmake .. # 每次CMakeLists.txt变化后需要重新执行
-make
-
-# 你有可能编译成功，有可能失败（在笔者这里失败了）
-make
-Scanning dependencies of target server
-[ 25%] Building CXX object CMakeFiles/server.dir/server.cpp.o
-clang: warning: -lsockpp: 'linker' input unused [-Wunused-command-line-argument]
-/Users/dashjay/CLionProjects/http_demo/server.cpp:1:10: fatal error:
-      'sockpp/tcp_acceptor.h' file not found
-#include "sockpp/tcp_acceptor.h"
+```bash
+$ bazel run //1-cmake-socket-echo:server
+INFO: Invocation ID: 9075ee1e-cb2d-4f51-b5b9-ea2d20c4f1a5
+INFO: Analyzed target //1-bazel-socket-echo:server (1 packages loaded, 34 targets configured).
+INFO: Found 1 target...
+Target //1-bazel-socket-echo:server up-to-date:
+  bazel-bin/1-bazel-socket-echo/server
+INFO: Elapsed time: 5.252s, Critical Path: 2.28s
+INFO: 18 processes: 7 internal, 11 darwin-sandbox.
+INFO: Build completed successfully, 18 total actions
+INFO: Build completed successfully, 18 total actions
+try accept a conn at port 8080
 
 ```
-
-推测是cmake并没有使用系统的的include目录和lib链接目录，导致的，搜索文档后手动添加这两个目录，在笔者电脑上这两个目录分别是`/usr/local/include`和`/usr/local/lib`，修改后的CMake文件像这样。(已经去掉注释了)
-
-```cmake
-cmake_minimum_required(VERSION 3.16)
-
-set(project_name http_demo)
-
-project(${project_name})
-
-set(CMAKE_CXX_COMPILER "c++")
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_STANDARD 17)
-
-set(CMAKE_CXX_FLAGS -g -W -lsockpp)
-string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-message(STATUS "CMAKE_CXX_FLAGS: " "${CMAKE_CXX_FLAGS}")
-
-include_directories(/usr/local/include)
-link_directories(/usr/local/lib)
-
-add_executable(main main.cpp)
-add_executable(server server.cpp)
-```
-
-再次执行`cmake .. && make` 后，成功编译出`server`，执行，并且使用 `telnet` 小工具帮助我们调试。
 
 ## 0x4 总结
 
 今天我们做了以下事情：
 
 - 用CPP写了一个Hello World
-- 学习使用Cmake运行普通的程序，添加链接库等
-- 简单的Sockpp的使用
+- 学习使用 Bazel 运行普通的程序，添加链接库等
+- 简单的 Sockpp 的使用
 
 还有什么问题可以直接到ISSUE中提问，我或者社区里的其他小伙伴会帮你解答的。
 
-[1] Cmake可以帮助跨平台软件的安装和编译，可以通过命令生成一系列Makefile，然后进一步执行编译，测试等指令（对我们来说就这个作用，实际上功能比这个要强大的多。）
+[1] Bazel 快速可靠的测试和构建任何大小的软件 [link](https://bazel.build/)

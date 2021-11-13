@@ -18,6 +18,8 @@ int main(){
 
     char buf[1024];
     
+    // 这个进程是一个单线程，只能处理一个请求来源，并且通过 for 循环，从对应的 fd 中取出从网卡收到的信息
+    // 在后面的课程中，我们会设计多线程io复用模型
     for(;;){
         if(auto siz = sock.read(buf, 1024); siz > 0){
             print_without_crlf(buf);

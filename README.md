@@ -11,9 +11,9 @@ author: 'dashjay'
 
 Repo我开在这里，欢迎大家点个Star或者Fork操作。<https://github.com/dashjay/http_demo.git>
 
-本教程[1]，使用6节课程/文章，尝试使用最简单的CPP知识实现一个高性能，简单的的HTTP Server。
+本教程[1]，使用6节课程/文章，尝试使用最简单的CPP知识实现一个高性能，简单的的HTTP Server，课程使用 bazel 进行构建，简化了构建流程。
 
-1. [易]简单的Cmake的教程，选用一个Socket库[2]并实现一个echo[3]。[link](https://github.com/dashjay/http_demo/tree/master/1-cmake-socket-echo)
+1. [易]简单的 bazel 的教程，选用一个Socket库[2]并实现一个echo[3]。[link](https://github.com/dashjay/http_demo/tree/master/1-cmake-socket-echo)
 2. [易]定义HTTP请求和返回体的结构，构建并输出HTTP请求和返回体到标准输出。[link](https://github.com/dashjay/http_demo/tree/master/2-http-request-response)
 3. [易]引入cpptoml从文件读取配置，引入spdlog尝试打log，帮助调试。[link](https://github.com/dashjay/http_demo/tree/master/3-cpptoml-spdlog)
 4. [难]定义一个bufReader类，并且使用该bufReader从TCP流中解析HTTP请求和返回体。[link](https://github.com/dashjay/http_demo/tree/master/4-bufreader)
@@ -24,6 +24,7 @@ Repo我开在这里，欢迎大家点个Star或者Fork操作。<https://github.c
 
 - 2020-08-06：维护 4 个分支太麻烦了，所有教程全部放到 master 分支的不同文件夹下
 - 2020-08-05：更新教程 4-bufreader
+- 2021-11-01：最近学习了 bazel 的使用，于是将项目 bazel 化
 
 ## 我们要准备的东西(推荐）
 
@@ -36,3 +37,4 @@ Repo我开在这里，欢迎大家点个Star或者Fork操作。<https://github.c
 1. 算不上什么教程，顺便测试一下脚注。
 2. HTTP/GRPC 等等这样的协议通常底层采用TCP来实现，也就是学校里学到的那种面向流的服务，cpp中的系统调用实现的socker接口用起来有些不顺手。因此我找到了一个现代的Socket库<https://github.com/fpagliughi/sockpp>来帮助我们在这节课中完成HTTP服务器。
 3. 你发给它什么，他就回复什么，常见的网络库都会用这个代替HELLOWORLD
+4. bazel 是一个构建工具，可以帮助项目进行构建，类似一个 Cmake ，文档在这里 [bazel c++](https://docs.bazel.build/versions/4.2.1/tutorial/cpp.html)，比如第一个程序可以通过命令 `bazel run //1-cmake-socket-echo:hello-world` 来构建并且运行。
