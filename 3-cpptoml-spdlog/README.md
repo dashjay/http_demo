@@ -36,13 +36,28 @@ Let's do it
 
 ### 安装
 
+
 ```bash
-git clone https://github.com/toml-lang/toml.git
-cd toml; mkdir build; cd build
-cmake .. && make && make install
+# git clone https://github.com/toml-lang/toml.git
+# cd toml; mkdir build; cd build
+# cmake .. && make && make install
+# 上方的是传统安装方式，BAZEL安装的话，在 WORKSPACE 中编写以下内容
+http_archive(
+    name = "cpptoml",
+    urls = ["https://github.com/skystrife/cpptoml/archive/refs/tags/v0.1.1.tar.gz"],
+    sha256 = "23af72468cfd4040984d46a0dd2a609538579c78ddc429d6b8fd7a10a6e24403",
+    strip_prefix = "cpptoml-0.1.1",
+    build_file_content = """
+filegroup(
+    name = "include",
+    srcs = glob(["include/**"]),
+    visibility = ["//visibility:public"], 
+)
+"""
+)
 ```
 
-> 看到这里你即便不知道cmake有什么用，但是你也知道他有多常见了吧？
+> 看到这里你即便不知道 bazel 有什么用，但是也知道 bazel 是真的很方便
 > 到目前为止我们电脑里已经安装了sockpp, cpptoml. 他们一个是有链接库的，一个是header only的。
 
 ### 小尝试
@@ -64,29 +79,42 @@ int main() {
 }
 ```
 
-当你写成这样尝试 make 的时候，你会发现
+当你写成这样尝试 bazel run 的 的时候，你会报错，因为bazel 不能帮你获取一个 config.yaml 文件到当前目录下面，因此你需要使用 `bazel build` 命令
 
-```bash
-» make
-[ 25%] Building CXX object CMakeFiles/main.dir/main.cpp.o
-/Users/dashjay/CLionProjects/http_demo/main.cpp:4:10: fatal error: 'cpptoml.h' file not found
-#include "cpptoml.h"
+```
+$ bazel build //3-cpptoml-spdlog:main
+INFO: Invocation ID: 71d2b650-9efb-4fed-9af9-bfe06afa5af0
+DEBUG: Rule 'spdlog' indicated that a canonical reproducible form can be obtained by modifying arguments sha256 = "6fff9215f5cb81760be4cc16d033526d1080427d236e86d70bb02994f85e3d38"
+DEBUG: Repository spdlog instantiated at:
+  /Users/kevin/Desktop/code/http_demo/WORKSPACE:18:13: in <toplevel>
+Repository rule http_archive defined at:
+  /private/var/tmp/_bazel_kevin/ce6fd4f831835df0db0420815294e5b1/external/bazel_tools/tools/build_defs/repo/http.bzl:336:31: in <toplevel>
+.....
+INFO: Found 1 target...
+Target //3-cpptoml-spdlog:main up-to-date:
+  bazel-bin/3-cpptoml-spdlog/main
 ```
 
-和之前的原因一样，你得在 CMakeLists.txt 中加上 `include_directories(/usr/local/include)` 或者你的 cpptoml 安装的位置。
-
-当你运行会得到如下的结果
-
-```text
-server will start at port 8083
-....
-```
-
-前提是，运行目录下方有一个 `config.toml` 文件，
+然后进入 3-cpptoml-spdlog 保证运行目录下方有一个 `config.toml` 文件
 
 ```toml
 [ENV]
 port = 8083
+```
+
+```text 
+cd 3-cpptoml-spdlog
+../bazel-bin/3-cpptoml-spdlog/main
+server will start at port 8083
+[2021-11-14 09:01:20.235] [info] request: GET / HTTP/1.1
+server: http-demo-1
+
+body
+[2021-11-14 09:01:20.236] [info] response: HTTP/1.1 200 OK
+server: http-demo-1
+
+body
+....
 ```
 
 **为什么使用*port来取值：** 通过源代码我们发现 `auto port = ....` 的得到的不是目标类型的对象，而是一个叫做 option 的对象，下面有一些代码解释。
@@ -114,7 +142,7 @@ class option
     ...
 ```
 
-我们可以看到，返回的对象被重载了 `bool()`, `*`, `->` 三种操作符：分别可以得到， **对象是否为空**，**对象的引用**，**指向对象的指针**三个值。
+我们可以看到，返回的对象被重载了 `bool()`, `*`, `->` 三种操作符：分别可以得到， **对象是否为空**，**对象的引用**，**指向对象的指针**等三个值。
 
 ## 0x3 为什么不使用std::cout或std::cerr 来输出日志
 
@@ -133,7 +161,24 @@ class option
 
 [spdlog](https://github.com/gabime/spdlog)
 
-安装什么的应该不用我说吧，它有cmake，和之前的操作一样即可。这个也是一个纯header的库，无需链接。
+安装什么的应该不用我说吧，它有可以自己研究研究，和之前的操作一样即可。这个也是一个纯header的库，无需链接。
+
+在 WORKSPACE 下添加如下代码
+
+```
+http_archive(
+    name = "spdlog",
+    urls = ["https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.tar.gz"],
+    strip_prefix = "spdlog-1.9.2",
+    build_file_content = """
+filegroup(
+    name = "include",
+    srcs = glob(["include/**"]),
+    visibility = ["//visibility:public"], 
+)
+"""
+)
+```
 
 写了一些代码修改之后的主文件如下
 
@@ -165,6 +210,6 @@ int main() {
 
 这样全局调用即可，如果我们没有什么更高级的需求。
 
-今天的内容有点水了，这可是为了我们下面最难的一节做一些铺垫，我可不想看到以为重新编译一遍就能解决问题的你，疯狂make……
+今天的内容有点水了，这可是为了我们下面最难的一节做一些铺垫，我可不想看到觉得自己没错，以为重新编译一遍就能解决问题的你，疯狂 bazel
 
 [^1]: 在这一点上我并没有写代码确认，也没有阅读源代码，在这里这么描述是不负责的，但是多线程使用 `std::cout << 或 std::cerr <<` 是肯定会产生一些错误的。

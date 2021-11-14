@@ -153,7 +153,6 @@ template<size_t siz>
             auto n = m_sock->read(m_w, siz - (m_w - m_buf));
             // n 小于 0 已经是 socket报错了
             // 未来为抛出异常，在示例代码中也是
-            // 现在为了不影响大家学习，暂时用return代替
             if (n < 0) {
                 err.detail = ErrNegativeCount;
                 throw std::move(err);
@@ -239,7 +238,7 @@ template<size_t siz>
 bool BufReader<siz>::read_n(std::string &buf, size_t n);
 ```
 
-当希望读取指定长度 n 时，我们不太确定是否能在bufReader上做这个操作，因为我们不知道现在缓存里有多少内容了，也不知道 n 是否会 大于 buf总数。
+当希望读取指定长度 n 时，我们不太确定是否能在 bufReader 上做这个操作，因为我们不知道现在缓存里有多少内容了，也不知道 n 是否会 大于 buf总数。
 
 我们要尽力 `read`，因此我们这里希望能提供两个函数的实现，一个是常规读取，读取n个字符长度。
 
@@ -251,7 +250,7 @@ bool BufReader<siz>::read_n(std::string &buf, size_t n);
 
 1. 如果 n < 缓存数量，直接assign进去，然后返回。
 2. 如果 n > 缓存数量 < bufSize，先执行 fill 到足够再执行 1
-3. 如果 n > bufSize，先把缓存部分直接assign进去，剩下的部分直接从socket读取，高效。
+3. 如果 n > bufSize，先把缓存部分直接 assign 进去，剩下的部分直接从socket读取，高效。
 
 ### 暂停 + 思考
 
@@ -261,7 +260,7 @@ bool BufReader<siz>::read_n(std::string &buf, size_t n);
 
 这个 bufReader 我是参考的 golang 的 bufio，它的源代码在这里 <https://github.com/golang/go/blob/master/src/bufio/bufio.go>, 自动化测试流程也在文件夹内：<https://github.com/golang/go/tree/master/src/bufio>，我准备先屏蔽这小部分内容，对下面的内容进行仔细讲解。
 
-在底部我们有整个bufReader实现的源代码，github仓库中也有我们课程配套的代码。
+在底部我们有整个bufReader实现的源代码，github 仓库中也有我们课程配套的代码。
 
 ## 0x3 使用 bufReader 解析 HTTP 请求
 
@@ -271,7 +270,7 @@ bool BufReader<siz>::read_n(std::string &buf, size_t n);
 
 ### 解析请求行
 
-记得我们刚才readline返回的是一个 pair 么？这个pair有头有尾，我们的解析请求行的函数就这么写吧。
+记得我们刚才readline返回的是一个 pair 么？这个 pair 有头有尾，我们的解析请求行的函数就这么写吧。
 
 ```cpp
 namespace parser{
@@ -449,7 +448,7 @@ int main() {
 }
 ```
 
-在我这里运行，并且使用curl请求发送到8080端口 `curl localhost:8080 -v`
+在我这里运行，并且使用 curl 请求发送到 8080 端口 `curl localhost:8080 -v`
 
 会得到输出：
 
@@ -472,11 +471,11 @@ server: http-demo-1
 
 📌既然都从golang那边抄过来了，为什么不直接用golang，非要用cpp在这里墨迹？
 
-> 写这个项目的初衷并不是要写一个HTTP服务器，我在生产中遇到过一个问题，要在同一个端口同时处理 HTTP 和 TCP，知道golang的能可能会说，用hijike啊！hijike确实可以提取出tcp连接来，就没办法再进行HTTP操作，换句话说，太不灵活，结论：
+> 写这个项目的初衷并不是要写一个HTTP服务器，我在生产中遇到过一个问题，要在同一个端口同时处理 HTTP 和 TCP，知道 golang 的能可能会说，用hijike啊！hijike确实可以提取出tcp连接来，就没办法再进行HTTP操作，换句话说，太不灵活，结论：
 >
 > 1. golang的库不够灵活
 >
-> 在TCP层尝试用手动撸 HTTP 的时候，发现golang内部的很多内容都是堆操作，在堆区拷贝过来拷贝过去，写代码的效率很高，执行起来也不慢，可是内存消耗，就稳不住了，结论：
+> 在 TCP 层尝试用手动撸 HTTP 的时候，发现golang内部的很多内容都是堆操作，在堆区拷贝过来拷贝过去，写代码的效率很高，执行起来也不慢，可是内存消耗，就稳不住了，结论：
 >
 > 2. 大量 GC(垃圾回收) 引起内存抖动
 >
@@ -486,7 +485,7 @@ server: http-demo-1
 
 我引入了一个 errors 命名空间，在里面定义了一个异常类，如果你不知道异常……（我在这里立一个flag，要开一篇文章讲讲异常）
 
-我在底部放了一些Q&A，看到一半觉得很难受的可以到底部看看
+我在底部放了一些 Q&A，看到一半觉得很难受的可以到底部看看
 
 ```cpp
 #ifndef HTTPDEMO_BUFIO_HPP
@@ -768,7 +767,7 @@ namespace bufio {
 
 ### Q&As
 
-1. 为什么你的代码框的边角那么奇怪，博客地址<https://dashjay.github.io/>。
+1. 为什么你的代码框的边角那么奇怪，博客地址 <https://dashjay.github.io/>。
 
     因为我设定了 border-radius: 5% 结果，代码越长，这个半径越大，看起来很难受。我知道可以分别设置宽高的radius，我这不是写教程太忙了没时间改么。
 
@@ -1060,11 +1059,11 @@ std::string Response::to_string() {
 
 ### 运行结果
 
-当我们把http的服务器运行在8080端口，并且可以直接通过curl或者浏览器方式时。
+当我们把 http 的服务器运行在 8080 端口，并且可以直接通过 curl 或者浏览器方式时。
 
-我们再把这个程序运行在8081端口，并且访问8081端口，程序执行流程如下。
+我们再把这个程序运行在 8081 端口，并且访问 8081 端口，程序执行流程如下。
 
-你的curl同http-demo之间建立连接，并且发送一个请求，http-demo读取到请求，然后转发给 python 的服务器并且得到返回值。读取到返回包后，你将返回包，写回客户端并且断开连接，程序退出。
+你的 curl 同 http-demo 之间建立连接，并且发送一个请求，http-demo 读取到请求，然后转发给 python 的服务器并且得到返回值。读取到返回包后，你将返回包，写回客户端并且断开连接，程序退出。
 
 我这边curl收到的输出，和直接请求8080服务器的输出是一模一样的。
 
